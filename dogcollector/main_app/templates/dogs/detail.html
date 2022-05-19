@@ -20,6 +20,19 @@
                 <a href="{% url 'dogs_delete' dog.id %}">Delete</a>
             </div>
         </div>
+        {% for photo in dog.photo_set.all %}
+          <img class="responsive-img card-panel" src="{{photo.url}}">
+        {% empty %}
+          <div class="card-panel teal-text center-align">No Photos Uploaded</div>
+        {% endfor %}
+
+        <form action="{% url 'add_photo' dog.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+          {% csrf_token %}
+          <input type="file" name="photo-file">
+          <br><br>
+          <input type="submit" class="btn" value="Upload Photo">
+        </form>
+
     </div>
     <div class="col s6">
         <form method="post" action="{% url 'add_feeding' dog.id %}">
@@ -27,6 +40,12 @@
             {{ feeding_form.as_p }}
             <input type="submit" class="btn" value="Add Feeding">
         </form>
+        <br>
+        {% if dog.fed_for_today %}
+          <div class="card-panel teal-text center-align">{{dog.name}} has been fed all meals for today</div>
+        {% else %}
+          <div class="card-panel red-text center-align">{{dog.name}} might be hungry</div>
+        {% endif %}
         <table class="striped">
             <thead>
                 <tr><th>Date</th><th>Meal</th></tr>
@@ -53,6 +72,12 @@
             <span class="card-title">
               A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
             </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'unassoc_toy' dog.id toy.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn">Remove</button>
+            </form>
           </div>
         </div>
       {% endfor %}
@@ -84,7 +109,9 @@
     {% endif %}
   </div>
 </div>
+
 <script>
+
     const dateEl = document.getElementById('id_date');
     M.Datepicker.init(dateEl, {
         format: 'yyyy-mm-dd',
@@ -92,7 +119,10 @@
         setDefaultDate: true,
         autoClose: true
     });
+
     const selectEl = document.getElementById('id_meal');
     M.FormSelect.init(selectEl);
+    
 </script>
+
 {% endblock %}

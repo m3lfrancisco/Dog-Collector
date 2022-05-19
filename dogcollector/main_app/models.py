@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-
+from datetime import date
 
 MEALS = (
     ('B', 'Breakfast'),
@@ -12,13 +12,12 @@ class Toy(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=50)
 
-    def get_absolute_url(self):
-        return reverse('toys_detail', kwargs={'pk':self.id})
-    
     def __str__(self):
         return self.name
 
-
+    def get_absolute_url(self):
+        return reverse('toys_detail', kwargs={'pk':self.id})
+    
 class Dog(models.Model):
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100) 
@@ -28,11 +27,24 @@ class Dog(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={'cat_id': self.id})
 
+    def fed_for_today(self):
+        return self.feeding_set.filter(date=date.today()).count() >= len(MEALS)
+
+class Photo(models.Model):
+    url = models.CharField(max_length=200)
+    dog = models.ForeignKey(Dog, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Photo for dog_id: {self.dog_id} @{self.url}"
 
 class Feeding(models.Model):
     date = models.DateField('Feeding date')
     meal = models.CharField(
+        'Meal Period',
         max_length=1,
         choices=MEALS,
         default=MEALS[0][0]
