@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
-from .models import Dog
+from .models import Dog, Toy
+from .forms import FeedingForm
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -38,14 +39,34 @@ def dogs_detail(request, dog_id):
     """
     logging.info('calling dog_detail')
     dog = Dog.objects.get(id=dog_id)
-    return render(request, 'dogs/detail.html', {'dog': dog})
+    toys_dog_doesnt_have = Toy.objects.exclude(id__in = dog.toys.all().values_list('id'))
+    return render(request, 'dogs/detail.html', {
+        'dog': dog, 
+        'feeding_form': FeedingForm,
+        'toys': toys_dog_doesnt_have
+        })
+
+
+def add_feeding(request, dog_id):
+    form = FeedingForm(request.POST)
+    if form.is_valid():
+        new_feeding = form.save(commit=False)
+        new_feeding.dog_id = dog_id
+        new_feeding.save()
+    return redirect('detail', dog_id=dog_id)
+
+
+def assoc_toy(request, dog_id, toy_id):
+    Dog.objects.get(id=dog_id).toys.add(toy_id)
+    return redirect('detail', dog_detail=dog_id)
+
 
 class DogCreate(CreateView):
     """
     This class will create a dog object
     """
     model = Dog
-    fields = '__all__'
+    fields = ['name', 'breed', 'description', 'age']
     success_url = '/dogs/'
 
 class DogUpdate(UpdateView):
