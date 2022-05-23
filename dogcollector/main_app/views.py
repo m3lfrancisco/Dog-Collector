@@ -118,6 +118,10 @@ def unassoc_toy(request, dog_id, toy_id):
     return redirect('detail', dog_id=dog_id)
 
 def signup(request):
+    """
+    signup page
+    http://localhost:8000/accounts/signup/
+    """
     error_message = ''
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -132,19 +136,39 @@ def signup(request):
     return render(request, 'registration/signup.html', context)
 
 class ToyList(LoginRequiredMixin, ListView):
+    """
+    toy index page
+    http://localhost:8000/toys/
+    """
     model = Toy
 
 class ToyDetail(LoginRequiredMixin, DetailView):
+    """
+    toy detail page
+    http://localhost:8000/toys/9
+    """
     model = Toy
 
 class ToyCreate(LoginRequiredMixin, CreateView):
+    """
+    This class will create a toy object
+    http://localhost:8000/toys/create/
+    """
     model = Toy
     fields = '__all__'
 
 class ToyUpdate(LoginRequiredMixin, UpdateView):
+    """
+    This class will update a toy object
+    http://localhost:8000/toys/9/update/
+    """
     model = Toy
     fields = ['name', 'color']
 
 class ToyDelete(LoginRequiredMixin, DeleteView):
+    """
+    This class will delete a toy object
+    http://localhost:8000/toys/9/delete/
+    """
     model = Toy
     success_url = '/toys/'

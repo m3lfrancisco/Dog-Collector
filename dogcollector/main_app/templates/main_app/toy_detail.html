@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Toy Details</h1>
+<h1 class="purple-text">Toy Details</h1>
 
 <div class="row">
     <div class="col s6 col-offset-3">
@@ -12,7 +12,7 @@
         </div>
         <div class="card-action">
             <a href="{% url 'toys_update' toy.id %}">Edit</a>
-            <a href="{% url 'toys_delete' toy.id %}">Delete</a>
+            <a href="{% url 'toys_delete' toy.id %}" class="red-text">Delete</a>
         </div>
         </div>
     </div>

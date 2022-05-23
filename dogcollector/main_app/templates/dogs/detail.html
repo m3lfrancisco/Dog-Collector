@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1>Dog Details</h1>
+<h1 class="blue-text">Dog Details</h1>
 
 <div class="row">
     <div class="col s6">
@@ -15,10 +15,16 @@
                     <p>Age: Puppy</p>
                 {% endif %}
             </div>
-            <div class="card-action">
-                <a href="{% url 'dogs_update' dog.id %}">Edit</a>
-                <a href="{% url 'dogs_delete' dog.id %}">Delete</a>
-            </div>
+            {% if user == dog.user %}
+              <div class="card-action">
+                  <a href="{% url 'dogs_update' dog.id %}">Edit</a>
+                  <a href="{% url 'dogs_delete' dog.id %}" class="red-text">Delete</a>
+              </div>
+            {% else %}
+              <div class="card-action">
+                <p>View Only</p>
+              </div>
+            {% endif %}
         </div>
         {% for photo in dog.photo_set.all %}
           <img class="responsive-img card-panel" src="{{photo.url}}">
@@ -26,20 +32,28 @@
           <div class="card-panel teal-text center-align">No Photos Uploaded</div>
         {% endfor %}
 
-        <form action="{% url 'add_photo' dog.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
-          {% csrf_token %}
-          <input type="file" name="photo-file">
-          <br><br>
-          <input type="submit" class="btn" value="Upload Photo">
-        </form>
+        {% if user == dog.user %}
+          <form action="{% url 'add_photo' dog.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+            {% csrf_token %}
+            <input type="file" name="photo-file">
+            <br><br>
+            <input type="submit" class="btn" value="Upload Photo">
+          </form>
+        {% else %}
+          
+        {% endif %}
 
     </div>
     <div class="col s6">
+      {% if user == dog.user %}
         <form method="post" action="{% url 'add_feeding' dog.id %}">
             {% csrf_token %}
             {{ feeding_form.as_p }}
             <input type="submit" class="btn" value="Add Feeding">
         </form>
+      {% else %}
+        
+      {% endif %}
         <br>
         {% if dog.fed_for_today %}
           <div class="card-panel teal-text center-align">{{dog.name}} has been fed all meals for today</div>
@@ -64,48 +78,56 @@
 <hr>
 <div class="row">
   <div class="col s6">
-    <h3>{{ dog.name }}'s Toys</h3>
-    {% if dog.toys.count %}
-      {% for toy in dog.toys.all %}
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-              A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
-            </span>
+    {% if user == dog.user %}
+      <h3 class="purple-text">{{ dog.name }}'s Toys</h3>
+      {% if dog.toys.count %}
+        {% for toy in dog.toys.all %}
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">
+                A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
+              </span>
+            </div>
+            <div class="card-action">
+              <form action="{% url 'unassoc_toy' dog.id toy.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn waves-effect waves-light">Remove</button>
+              </form>
+            </div>
           </div>
-          <div class="card-action">
-            <form action="{% url 'unassoc_toy' dog.id toy.id %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="btn">Remove</button>
-            </form>
-          </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <h5 class="cyan-text">No Toys :(</h5>
+      {% endif %}
     {% else %}
-      <h5>No Toys :(</h5>
+      
     {% endif %}
   </div>
   <!-- Available toys will come after this line -->
   <div class="col s6">
-    <h3>Available Toys</h3>
-    {% if toys.count %}
-      {% for toy in toys.all %}
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-              A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
-            </span>
+    {% if user == dog.user %}
+      <h3 class="deep-purple-text">Available Toys</h3>
+      {% if toys.count %}
+        {% for toy in toys.all %}
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">
+                A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
+              </span>
+            </div>
+            <div class="card-action">
+              <form action="{% url 'assoc_toy' dog.id toy.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn waves-effect waves-light">Add</button>
+              </form>
+            </div>
           </div>
-          <div class="card-action">
-            <form action="{% url 'assoc_toy' dog.id toy.id %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="btn">Add</button>
-            </form>
-          </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <h5>{{dog.name}} Already Has All Toys Available</h5>
+      {% endif %}
     {% else %}
-      <h5>{{dog.name}} Already Has All Toys Available</h5>
+      
     {% endif %}
   </div>
 </div>
