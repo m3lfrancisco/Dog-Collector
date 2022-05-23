@@ -57,6 +57,7 @@ def dogs_detail(request, dog_id):
 class DogCreate(LoginRequiredMixin, CreateView):
     """
     This class will create a dog object
+    http://localhost:8000/dogs/create/
     """
     model = Dog
     fields = ['name', 'breed', 'description', 'age']
@@ -69,6 +70,7 @@ class DogCreate(LoginRequiredMixin, CreateView):
 class DogUpdate(LoginRequiredMixin, UpdateView):
     """
     This class will update a dog object from the DB
+    http://localhost:8000/dogs/6/update/
     """
     model = Dog
     fields = ['description', 'age']
@@ -79,6 +81,7 @@ class DogUpdate(LoginRequiredMixin, UpdateView):
 class DogDelete(LoginRequiredMixin, DeleteView):
     """
     This class will delete a dog object from the DB
+    http://localhost:8000/dogs/6/delete/
     """
     model = Dog
     success_url = '/dogs/'
