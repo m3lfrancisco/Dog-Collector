@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+
     {% if object %}
         <h1>Edit <span class="teal-text">{{object.name}}</span></h1>
     {% else %}
@@ -14,4 +14,5 @@
         </table>
         <input type="submit" value="Submit!" class="btn waves-effect waves-light">
     </form>
+    
 {% endblock %}

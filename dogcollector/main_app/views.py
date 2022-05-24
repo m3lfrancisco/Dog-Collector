@@ -168,6 +168,7 @@ class ToyUpdate(LoginRequiredMixin, UpdateView):
     model = Toy
     fields = ['name', 'color']
 
+
 class ToyDelete(LoginRequiredMixin, DeleteView):
     """
     This class will delete a toy object
